@@ -1,2 +1,2 @@
-afs
+AjaxForm Plugin
 ===
