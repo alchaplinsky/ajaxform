@@ -3,11 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Ajax Form</title>
+    <meta content="authenticity_token" name="csrf-param" />
+  <meta content="LeaCb1/bgGUDemKe5/AYEdDbu9n/cIcgZAhk4mObsmA=" name="csrf-token" />
   <script type="text/javascript" src="vendor/jquery-1.7.2.js"></script>
   <script type="text/javascript" src="ajaxform.js"></script>
+  <script type="text/javascript">
+  $(document).ready(function(){
+    $("form").ajaxForm();
+  });
+  </script>
 </head> 
 <body>
-  <form action="" method="post">
+  <form action="http://framework.local/" method="post">
+    <div>
+      <input name="authenticity_token" type="hidden" value="LeaCb1/bgGUDemKe5/AYEdDbu9n/cIcgZAhk4mObsmA=">
+      <input type="hidden" name="_method" value="put" />
+    </div>
     <p>
       <label for="">Firstname</label>
       <input type="text" name="firstname"/>
