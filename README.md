@@ -30,7 +30,7 @@ Or a single success callback function:
 
 ``` javascript
   $('#form').ajaxForm(function(){
-    window.location.href = '/some_url';
+    document.location.href = '/some_url';
   });
 ```
 
