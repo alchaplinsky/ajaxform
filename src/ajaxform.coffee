@@ -50,8 +50,9 @@ do ($ = jQuery) ->
           
     applyErrors: (errors) ->
       @clearErrors()
-      $.each errors, (k, v) =>
-        @addError($(@el).find("[name*=#{k}]"), v[0])
+      $.each errors, (key, val) =>
+        value = if $.isArray(val) then val[0] else val
+        @addError($(@el).find("[name*=#{key}]"), value)
         
     addError: (field, message) ->
       field.addClass(@settings.errorClass)

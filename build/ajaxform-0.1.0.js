@@ -77,8 +77,10 @@
       AjaxForm.prototype.applyErrors = function(errors) {
         var _this = this;
         this.clearErrors();
-        return $.each(errors, function(k, v) {
-          return _this.addError($(_this.el).find("[name*=" + k + "]"), v[0]);
+        return $.each(errors, function(key, val) {
+          var value;
+          value = $.isArray(val) ? val[0] : val;
+          return _this.addError($(_this.el).find("[name*=" + key + "]"), value);
         });
       };
 
