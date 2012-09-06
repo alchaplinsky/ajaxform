@@ -6,7 +6,8 @@ do ($ = jQuery) ->
       showErrorMessage: true
       errorMessageFormat: '<div class="error-message">{message}</div>'
       insertMessage: 'before'
-      onStart: ->
+      onRequestStart: ->
+      onRequestEnd: ->
       onSuccess: ->
       onError: ->
         
@@ -30,17 +31,17 @@ do ($ = jQuery) ->
       @url = $(@el).attr('action')
       $(element).on 'submit', (event) =>
         event.preventDefault()
-        @settings.onStart()
         @performRequest()
         
     performRequest: ->
+      @settings.onRequestStart()
       data = $(@el).serialize()
       $.ajax
         type: @settings.method || @method
         url:  @url
         data: data
-        
         success: (json) =>
+          @settings.onRequestEnd()
           if json.errors is undefined
             window.location = json.redirect unless json.redirect is undefined
             @settings.onSuccess(json)
@@ -48,6 +49,7 @@ do ($ = jQuery) ->
             @applyErrors(json.errors)
             
         error: (xhr) =>
+          @settings.onRequestEnd()
           @settings.onError(xhr)
           
     applyErrors: (errors) ->
@@ -57,14 +59,14 @@ do ($ = jQuery) ->
         @addError($(@el).find("[name*=#{key}]"), value)
         
     addError: (field, message) ->
-      field.addClass(@settings.onErrorClass)
+      field.addClass(@settings.errorClass)
       if @settings.showErrorMessage is true
         error = @settings.errorMessageFormat.replace('{message}', message)
         field[@settings.insertMessage](error)
           
     clearErrors: ->
-      fields = $(@el).find(".#{@settings.onErrorClass}")
-      fields.removeClass(@settings.onErrorClass)
+      fields = $(@el).find(".#{@settings.errorClass}")
+      fields.removeClass(@settings.errorClass)
       if @settings.showErrorMessage is true
         method = if @settings.insertMessage is 'before' then 'prev' else 'next'
         fields[method]().remove()

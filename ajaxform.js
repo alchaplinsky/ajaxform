@@ -19,7 +19,8 @@
         showErrorMessage: true,
         errorMessageFormat: '<div class="error-message">{message}</div>',
         insertMessage: 'before',
-        onStart: function() {},
+        onRequestStart: function() {},
+        onRequestEnd: function() {},
         onSuccess: function() {},
         onError: function() {}
       };
@@ -47,7 +48,6 @@
         this.url = $(this.el).attr('action');
         $(element).on('submit', function(event) {
           event.preventDefault();
-          _this.settings.onStart();
           return _this.performRequest();
         });
       }
@@ -55,12 +55,14 @@
       AjaxForm.prototype.performRequest = function() {
         var data,
           _this = this;
+        this.settings.onRequestStart();
         data = $(this.el).serialize();
         return $.ajax({
           type: this.settings.method || this.method,
           url: this.url,
           data: data,
           success: function(json) {
+            _this.settings.onRequestEnd();
             if (json.errors === void 0) {
               if (json.redirect !== void 0) {
                 window.location = json.redirect;
@@ -71,6 +73,7 @@
             }
           },
           error: function(xhr) {
+            _this.settings.onRequestEnd();
             return _this.settings.onError(xhr);
           }
         });
@@ -88,7 +91,7 @@
 
       AjaxForm.prototype.addError = function(field, message) {
         var error;
-        field.addClass(this.settings.onErrorClass);
+        field.addClass(this.settings.errorClass);
         if (this.settings.showErrorMessage === true) {
           error = this.settings.errorMessageFormat.replace('{message}', message);
           return field[this.settings.insertMessage](error);
@@ -97,8 +100,8 @@
 
       AjaxForm.prototype.clearErrors = function() {
         var fields, method;
-        fields = $(this.el).find("." + this.settings.onErrorClass);
-        fields.removeClass(this.settings.onErrorClass);
+        fields = $(this.el).find("." + this.settings.errorClass);
+        fields.removeClass(this.settings.errorClass);
         if (this.settings.showErrorMessage === true) {
           method = this.settings.insertMessage === 'before' ? 'prev' : 'next';
           return fields[method]().remove();
