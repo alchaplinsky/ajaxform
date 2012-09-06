@@ -19,6 +19,7 @@
         showErrorMessage: true,
         errorMessageFormat: '<div class="error-message">{message}</div>',
         insertMessage: 'before',
+        onStart: function() {},
         success: function() {},
         error: function() {}
       };
@@ -46,6 +47,7 @@
         this.url = $(this.el).attr('action');
         $(element).on('submit', function(event) {
           event.preventDefault();
+          _this.settings.onStart();
           return _this.performRequest();
         });
       }

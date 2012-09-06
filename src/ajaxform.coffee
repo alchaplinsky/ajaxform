@@ -6,15 +6,16 @@ do ($ = jQuery) ->
       showErrorMessage: true
       errorMessageFormat: '<div class="error-message">{message}</div>'
       insertMessage: 'before'
-      success: ->
-      error: ->
+      onStart: ->
+      onSuccess: ->
+      onError: ->
         
     if $.type(options) is 'object'
       settings = $.extend(settings, options)
       unless ['after', 'before'].indexOf(settings.insertMessage) > -1
         settings.insertMessage = 'before'
     else if $.type(options) is 'function'
-      settings.success = (data) ->
+      settings.onSuccess = (data) ->
         options(data)
       
     $(@).each ->
@@ -29,6 +30,7 @@ do ($ = jQuery) ->
       @url = $(@el).attr('action')
       $(element).on 'submit', (event) =>
         event.preventDefault()
+        @settings.onStart()
         @performRequest()
         
     performRequest: ->
@@ -41,12 +43,12 @@ do ($ = jQuery) ->
         success: (json) =>
           if json.errors is undefined
             window.location = json.redirect unless json.redirect is undefined
-            @settings.success(json)
+            @settings.onSuccess(json)
           else
             @applyErrors(json.errors)
             
         error: (xhr) =>
-          @settings.error(xhr)
+          @settings.onError(xhr)
           
     applyErrors: (errors) ->
       @clearErrors()
@@ -55,14 +57,14 @@ do ($ = jQuery) ->
         @addError($(@el).find("[name*=#{key}]"), value)
         
     addError: (field, message) ->
-      field.addClass(@settings.errorClass)
+      field.addClass(@settings.onErrorClass)
       if @settings.showErrorMessage is true
         error = @settings.errorMessageFormat.replace('{message}', message)
         field[@settings.insertMessage](error)
           
     clearErrors: ->
-      fields = $(@el).find(".#{@settings.errorClass}")
-      fields.removeClass(@settings.errorClass)
+      fields = $(@el).find(".#{@settings.onErrorClass}")
+      fields.removeClass(@settings.onErrorClass)
       if @settings.showErrorMessage is true
         method = if @settings.insertMessage is 'before' then 'prev' else 'next'
         fields[method]().remove()
