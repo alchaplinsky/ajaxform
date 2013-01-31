@@ -9,8 +9,9 @@ do ($ = jQuery) ->
       onRequestStart: ->
       onRequestEnd: ->
       onSuccess: ->
+      onErrors: ->
       onError: ->
-        
+
     if $.type(options) is 'object'
       settings = $.extend(settings, options)
       unless ['after', 'before'].indexOf(settings.insertMessage) > -1
@@ -18,12 +19,12 @@ do ($ = jQuery) ->
     else if $.type(options) is 'function'
       settings.onSuccess = (data) ->
         options(data)
-      
+
     $(@).each ->
       new AjaxForm(@, settings)
-    
+
   class AjaxForm
-      
+
     constructor: (element, settings) ->
       @el = element
       @settings = settings
@@ -32,7 +33,7 @@ do ($ = jQuery) ->
       $(element).on 'submit', (event) =>
         event.preventDefault()
         @performRequest()
-        
+
     performRequest: ->
       @settings.onRequestStart()
       data = $(@el).serialize()
@@ -46,24 +47,25 @@ do ($ = jQuery) ->
             window.location = json.redirect unless json.redirect is undefined
             @settings.onSuccess(json)
           else
+            @settings.onErrors(json)
             @applyErrors(json.errors)
-            
+
         error: (xhr) =>
           @settings.onRequestEnd()
           @settings.onError(xhr)
-          
+
     applyErrors: (errors) ->
       @clearErrors()
       $.each errors, (key, val) =>
         value = if $.isArray(val) then val[0] else val
         @addError($(@el).find("[name*=#{key}]"), value)
-        
+
     addError: (field, message) ->
       field.addClass(@settings.errorClass)
       if @settings.showErrorMessage is true
         error = @settings.errorMessageFormat.replace('{message}', message)
         field[@settings.insertMessage](error)
-          
+
     clearErrors: ->
       fields = $(@el).find(".#{@settings.errorClass}")
       fields.removeClass(@settings.errorClass)
