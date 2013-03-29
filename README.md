@@ -21,8 +21,9 @@ Optionaly ajaxFom function takes a hash of paratmeters:
     showErrorMessage: true,    // Show error messages or just highlight field 
     errorMessageFormat: '<div class="error-message">{message}</div>', // Error message markup.
     insertMessage: 'before',   // Error message position. Accepts 2 options 'before' and 'after'
-    success: function(){},     // Success callback. If validation passed
-    error: function(){}        // Server error callback
+    onSuccess: function(){},     // Success callback. If validation passed
+    onErrors: function(){},  //is callback for successfull server response with array of validation errors
+    onError: function(){},  //is server error callback
   });
 ```
 
