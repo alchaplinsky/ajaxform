@@ -58,7 +58,11 @@ do ($ = jQuery) ->
       @clearErrors()
       $.each errors, (key, val) =>
         value = if $.isArray(val) then val[0] else val
-        @addError($(@el).find("[name*=#{key}]"), value)
+        if $(@el).find("[validate*=#{key}]").length is 0
+          field = $(@el).find("[name*=#{key}]")
+        else
+          field = $(@el).find("[validate*=#{key}]")
+        @addError(field, value)
 
     addError: (field, message) ->
       field.addClass(@settings.errorClass)
